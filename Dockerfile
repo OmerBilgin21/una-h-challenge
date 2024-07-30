@@ -12,5 +12,6 @@ ENV ENV $ENV
 ARG CONNECTION_STR
 ENV CONNECTION_STR $CONNECTION_STR
 
-CMD [ "python3", "main.py" ]
+EXPOSE 8000
 
+CMD [ "python3", "main.py" ]
