@@ -1,11 +1,12 @@
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
+import pytz
 import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.db.models import Session, User
+from src.types.models import Session, User
 from src.utils.parser import process_csv
 
 app = FastAPI()
@@ -14,8 +15,8 @@ session = Session()
 
 @app.get("/", response_model=list)
 async def get_user_data(
-	start_date: datetime | None = datetime.now(tz=timezone.utc),
-	end_date: datetime | None = datetime.now(tz=timezone.utc) + timedelta(hours=2),
+	start_date: datetime | None = None,
+	end_date: datetime | None = None,
 	limit: int | None = None,
 ) -> list:
 	"""_summary_
@@ -36,14 +37,32 @@ async def get_user_data(
 	"""
 	try:
 		user_data = session.query(User).all()
-		return [User.model_to_dict(user) for user in user_data]
+		user_data = [User.model_to_dict(user) for user in user_data]
 
 	except Exception as exc:
 		raise HTTPException(
 			status_code=500,
 			detail="Error while getting user data",
 		) from exc
-	return []
+
+	if start_date:
+		user_data = list(
+			filter(
+				lambda x: pytz.utc.localize(x["geratezeitstempel"]) > start_date,
+				user_data,
+			),
+		)
+	if end_date:
+		user_data = list(
+			filter(
+				lambda x: pytz.utc.localize(x["geratezeitstempel"]) < end_date,
+				user_data,
+			),
+		)
+	if limit:
+		user_data = user_data[:20]
+
+	return user_data
 
 
 @app.post("/upload-csv", response_model=list)

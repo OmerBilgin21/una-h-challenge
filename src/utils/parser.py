@@ -5,7 +5,7 @@ from io import StringIO
 import pandas as pd
 from fastapi import UploadFile
 
-from src.db.parser_schema import ParsedCSVData
+from src.types.parser_schema import ParsedCSVData
 
 # ruff: noqa: ERA001
 
