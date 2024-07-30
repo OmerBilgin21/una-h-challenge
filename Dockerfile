@@ -12,5 +12,5 @@ ENV ENV $ENV
 ARG CONNECTION_STR
 ENV CONNECTION_STR $CONNECTION_STR
 
-CMD [ "python3", "controller.py" ]
+CMD [ "python3", "main.py" ]
 

@@ -12,19 +12,15 @@ services:
         depends_on:
             - postgresql
         environment:
-            - ENV=dev
-            - CONNECTION_STR=$CONNECTION_STR
+            - ENV=prod
+            - CONNECTION_STR=postgresql://postgres@postgresql/una_db
+
     postgresql:
         image: postgres:latest
         container_name: postgresql
         ports:
             - 5432:5432
         environment:
+            - POSTGRES_HOST_AUTH_METHOD=trust
             - POSTGRES_USER=postgres
             - POSTGRES_DB=una_db
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-
-volumes:
-    postgres_data:
-        driver: local
