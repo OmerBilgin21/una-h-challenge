@@ -2,10 +2,10 @@ import os
 from datetime import datetime
 from typing import Literal
 
-import pytz
 import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import desc
 
 from src.types.models import Session, User
 from src.utils.parser import process_csv
@@ -19,6 +19,7 @@ async def get_user_data(
 	start_date: datetime | None = None,
 	end_date: datetime | None = None,
 	limit: float | None = None,
+	user_id: str | None = None,
 	# https://stackoverflow.com/questions/69087120/how-to-allow-specific-parameter-values-in-openapi-specification-swagger-ui-usi # noqa: ERA001, E501
 	sort_type: Literal["asc", "dsc"] | None = None,
 ) -> list:
@@ -37,8 +38,24 @@ async def get_user_data(
 	Returns:
 		list: _description_
 	"""
+	query = session.query(User)
+
+	if start_date:
+		query = query.filter(User.geratezeitstempel > start_date)
+	if end_date:
+		query = query.filter(User.geratezeitstempel < end_date)
+	if limit:
+		query = query.filter(User.glukosewert_verlauf < limit)
+	if user_id:
+		query = query.filter(User.user_id == user_id)
+	if sort_type == "asc":
+		query.order_by(User.geratezeitstempel)
+	if sort_type == "dsc":
+		query.order_by(desc(User.geratezeitstempel))
+
 	try:
-		user_data = session.query(User).all()
+		user_data = query.all()
+
 		user_data = [User.model_to_dict(user) for user in user_data]
 
 	except Exception as exc:
@@ -46,34 +63,6 @@ async def get_user_data(
 			status_code=500,
 			detail="Error while getting user data",
 		) from exc
-
-	if start_date:
-		user_data = list(
-			filter(
-				lambda x: pytz.utc.localize(x["geratezeitstempel"]) > start_date,
-				user_data,
-			),
-		)
-	if end_date:
-		user_data = list(
-			filter(
-				lambda x: pytz.utc.localize(x["geratezeitstempel"]) < end_date,
-				user_data,
-			),
-		)
-	if limit:
-		for data in user_data:
-			if (
-				"glukosewert_verlauf" in data
-				and data["glukosewert_verlauf"] is not None
-				and data["glukosewert_verlauf"] > limit
-			):
-				del data
-
-	if sort_type == "asc":
-		sorted(user_data, key=lambda x: x["geratezeitstempel"])
-	elif sort_type == "dsc":
-		sorted(user_data, key=lambda x: x["geratezeitstempel"], reverse=True)
 
 	return user_data
 
