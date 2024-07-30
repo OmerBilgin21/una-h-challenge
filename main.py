@@ -6,7 +6,6 @@ from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.db.models import Session, User
-from src.db.parser_schema import ParsedCSVData
 from src.utils.parser import process_csv
 
 app = FastAPI()
@@ -41,7 +40,8 @@ async def get_user_data(
 
 	except Exception as exc:
 		raise HTTPException(
-			status_code=500, detail="Error while getting user data"
+			status_code=500,
+			detail="Error while getting user data",
 		) from exc
 	return []
 

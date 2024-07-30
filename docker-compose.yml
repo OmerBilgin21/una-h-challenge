@@ -1,0 +1,30 @@
+# Only for dev
+# For deployed version a cloud provider
+# for postgres dbs will be used
+
+services:
+    health_observer:
+        build:
+            dockerfile: ./Dockerfile
+        container_name: health_observer
+        ports:
+            - 8000:8000
+        depends_on:
+            - postgresql
+        environment:
+            - ENV=dev
+            - CONNECTION_STR=$CONNECTION_STR
+    postgresql:
+        image: postgres:latest
+        container_name: postgresql
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=una_db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+volumes:
+    postgres_data:
+        driver: local
