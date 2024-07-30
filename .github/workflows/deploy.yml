@@ -34,7 +34,8 @@ jobs:
               id: meta
               uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
               with:
-                  images: ${{ secrets.DOCKER_USERNAME }}/health_observer:latest
+                  images: |
+                      ${{ secrets.DOCKER_USERNAME }}/health_observer
 
             - name: Build and push Docker images
               id: push
@@ -42,8 +43,7 @@ jobs:
               with:
                   context: .
                   push: true
-                  tags: ${{ steps.meta.outputs.tags }}
-                  labels: ${{ steps.meta.outputs.labels }}
+                  tags: latest
 
             - name: Generate artifact attestation
               uses: actions/attest-build-provenance@v1
