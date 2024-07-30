@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.types.models import Session, User
 from src.utils.parser import process_csv
+from typing import Union
 
 app = FastAPI()
 session = Session()
@@ -18,6 +19,7 @@ async def get_user_data(
 	start_date: datetime | None = None,
 	end_date: datetime | None = None,
 	limit: int | None = None,
+	sort_type: str | None = None,
 ) -> list:
 	"""_summary_
 
@@ -60,7 +62,20 @@ async def get_user_data(
 			),
 		)
 	if limit:
-		user_data = user_data[:20]
+		for data in user_data:
+			if (
+				getattr("glukosewert_verlauf", data) is not None
+				and data["glukosewert_verlauf"] > limit
+			):
+				del data
+
+	if sort_type and sort_type not in ("asc", "dsc"):
+		raise HTTPException(status_code=400, detail="Bad sort type!")
+
+	if sort_type == "asc":
+		user_data.sort()
+	elif sort_type == "dsc":
+		user_data.sort(reverse=True)
 
 	return user_data
 
