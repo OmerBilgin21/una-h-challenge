@@ -63,16 +63,17 @@ async def get_user_data(
 		)
 	if limit:
 		for data in user_data:
-			if "glukosewert_verlauf" in data and data["glukosewert_verlauf"] > limit:
+			if (
+				"glukosewert_verlauf" in data
+				and data["glukosewert_verlauf"] is not None
+				and data["glukosewert_verlauf"] > limit
+			):
 				del data
 
-	if sort_type and sort_type not in ("asc", "dsc"):
-		raise HTTPException(status_code=400, detail="Bad sort type!")
-
 	if sort_type == "asc":
-		user_data.sort()
+		sorted(user_data, key=lambda x: x["geratezeitstempel"])
 	elif sort_type == "dsc":
-		user_data.sort(reverse=True)
+		sorted(user_data, key=lambda x: x["geratezeitstempel"], reverse=True)
 
 	return user_data
 
