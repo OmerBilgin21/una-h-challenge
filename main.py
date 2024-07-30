@@ -18,7 +18,7 @@ session = Session()
 async def get_user_data(
 	start_date: datetime | None = None,
 	end_date: datetime | None = None,
-	limit: int | None = None,
+	limit: float | None = None,
 	# https://stackoverflow.com/questions/69087120/how-to-allow-specific-parameter-values-in-openapi-specification-swagger-ui-usi # noqa: ERA001, E501
 	sort_type: Literal["asc", "dsc"] | None = None,
 ) -> list:
@@ -63,10 +63,7 @@ async def get_user_data(
 		)
 	if limit:
 		for data in user_data:
-			if (
-				getattr("glukosewert_verlauf", data) is not None
-				and data["glukosewert_verlauf"] > limit
-			):
+			if "glukosewert_verlauf" in data and data["glukosewert_verlauf"] > limit:
 				del data
 
 	if sort_type and sort_type not in ("asc", "dsc"):
