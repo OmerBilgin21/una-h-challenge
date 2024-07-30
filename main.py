@@ -23,20 +23,25 @@ async def get_user_data(
 	# https://stackoverflow.com/questions/69087120/how-to-allow-specific-parameter-values-in-openapi-specification-swagger-ui-usi # noqa: ERA001, E501
 	sort_type: Literal["asc", "dsc"] | None = None,
 ) -> list:
-	"""_summary_
+	"""Get health data with different query options
 
 	Args:
-		start_date (datetime | None, optional): _description_. Defaults to None.
-		end_date (datetime | None, optional): _description_. Defaults to None.
-		limit (int | None, optional): _description_. Defaults to None.
-		sort_type (str | None, optional): _description_. Defaults to None.
+		start_date (datetime | None): Query filter.
+			Defaults to None.
+		end_date (datetime | None): Query filter.
+			Defaults to None.
+		limit (float | None): Query filter.
+			Defaults to None.
+		user_id (str | None): Query filter.
+			Defaults to None.
+		sort_type (Literal["asc"|"dsc"] | None): Sort query outcome.
+			Defaults to None.
 
 	Raises:
-		HTTPException: _description_
-		HTTPException: _description_
+		HTTPException: if db query fails
 
 	Returns:
-		list: _description_
+		list: Obtained data
 	"""
 	query = session.query(User)
 
