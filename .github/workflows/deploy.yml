@@ -45,7 +45,6 @@ jobs:
               with:
                   images: |
                       ${{ secrets.DOCKER_USERNAME }}/health_observer:latest
-                      ghcr.io/${{ github.repository }}
 
             - name: Build and push Docker images
               id: push
