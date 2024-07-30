@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Literal
 
 import pytz
 import uvicorn
@@ -8,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.types.models import Session, User
 from src.utils.parser import process_csv
-from typing import Union
 
 app = FastAPI()
 session = Session()
@@ -19,19 +19,19 @@ async def get_user_data(
 	start_date: datetime | None = None,
 	end_date: datetime | None = None,
 	limit: int | None = None,
-	sort_type: str | None = None,
+	# https://stackoverflow.com/questions/69087120/how-to-allow-specific-parameter-values-in-openapi-specification-swagger-ui-usi # noqa: ERA001, E501
+	sort_type: Literal["asc", "dsc"] | None = None,
 ) -> list:
 	"""_summary_
 
 	Args:
-		start_date (datetime | None, optional): _description_.
-			Defaults to datetime.now(tz=timezone.utc).
-		end_date (datetime | None, optional): _description_.
-			Defaults to datetime.now(tz=timezone.utc)+timedelta(hours=2).
-		limit (int | None, optional): _description_.
-			Defaults to None.
+		start_date (datetime | None, optional): _description_. Defaults to None.
+		end_date (datetime | None, optional): _description_. Defaults to None.
+		limit (int | None, optional): _description_. Defaults to None.
+		sort_type (str | None, optional): _description_. Defaults to None.
 
 	Raises:
+		HTTPException: _description_
 		HTTPException: _description_
 
 	Returns:
