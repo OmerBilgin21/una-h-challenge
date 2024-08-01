@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import desc
 
-from src.types.models import Session, User
+from src.models.models import Session, User
 from src.utils.parser import process_csv
 
 app = FastAPI()
